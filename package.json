@@ -1,0 +1,33 @@
+{
+  "name": "xazure-engine",
+  "version": "1.0.0",
+  "description": "A JavaScript-based engine for creating games.",
+  "main": "index.js",
+  "scripts": {
+    "start": "run-s clean && run-p *:watch server:run:watch",
+    "clean": "rimraf dist",
+    "demo:build": "babel src/demo -d dist/demo",
+    "demo:watch": "run-s \"demo:build -- -w\"",
+    "engine:build": "babel src/engine -d dist/engine",
+    "engine:watch": "run-s \"engine:build -- -w\"",
+    "server:run": "node -r esm server",
+    "server:run:watch": "nodemon -w server -r esm server"
+  },
+  "author": "C. Snodgrass",
+  "license": "ISC",
+  "dependencies": {
+    "esm": "^3.2.25",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.7.7",
+    "@babel/core": "^7.7.7",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/plugin-proposal-private-methods": "^7.7.4",
+    "@babel/preset-env": "^7.7.7",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "nodemon": "^2.0.2",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.0"
+  }
+}
