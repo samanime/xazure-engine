@@ -14,11 +14,11 @@ Open browser to localhost:8000
 
 ## Space Shooter
 
-Use up and down arrows or left control stick on gamepad to move up and down.
-Use spacebar or A on gamepad to fire.
+ * Use up and down arrows or left control stick on gamepad to move up and down.
+ * Use spacebar or A on gamepad to fire.
 
 ## Zombie Shooter
 
-Use WASD or left control stick on gamepad to move.
-Use mouse or right control stick to aim.
-Use spacebar or right trigger to fire.
+ * Use WASD or left control stick on gamepad to move.
+ * Use mouse or right control stick to aim.
+ * Use spacebar or right trigger to fire.
