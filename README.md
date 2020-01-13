@@ -9,8 +9,7 @@ You need to have Node installed.
     npm install
     npm start
     
-Open browser to localhost:8000
-
+Open browser to [localhost:8000](http://localhost:8000)
 
 ## Space Shooter
 

@@ -6,6 +6,8 @@ export default class Sprite extends Rectangle {
 
   #rotation = 0;
 
+  scale = 1;
+
   background = null;
 
   cursor = 'auto';
@@ -116,11 +118,12 @@ export default class Sprite extends Rectangle {
   }
 
   render(ctx) {
-    const { x, y, origin: { x: originX, y: originY }, rotation } = this;
+    const { x, y, origin: { x: originX, y: originY }, rotation, scale } = this;
 
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(rotation);
+    ctx.scale(scale, scale);
     ctx.translate(-originX, -originY);
 
     this.renderSelf(ctx);
