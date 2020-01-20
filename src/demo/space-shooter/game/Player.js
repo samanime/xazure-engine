@@ -6,11 +6,10 @@ export default class Player extends GameSprite {
 
   lives;
 
-  maxVelocity;     // pixels / second
-  maxAcceleration; // pixels / second / second
-
   bulletVelocity; // pixels / second
   fireRate;    // shots / second
+
+  direction = 3 * Math.PI / 2;
 
   #sinceLastFired = 0;
   #fired = false;
@@ -32,9 +31,9 @@ export default class Player extends GameSprite {
     this.maxVelocity = 300;
     this.maxAcceleration = 500;
 
-    this.velocity = { x: 0, y: 0 };
-    this.acceleration = { x: 0, y: 0 };
-    this.friction = { x: 0, y: 200 };
+    this.velocity = 0;
+    this.acceleration = 0;
+    this.friction = 200;
 
     this.x = x;
     this.y = y;
@@ -60,20 +59,5 @@ export default class Player extends GameSprite {
     const { fireRate } = this;
 
     return !this.#fired && this.#sinceLastFired >= 1000 / fireRate;
-  }
-
-  clampMove() {
-    const { parent, velocity, maxVelocity, y } = this;
-
-    if (!this.parent) {
-      return;
-    }
-
-    this.velocity = {
-      x: 0,
-      y: clamp(velocity.y, -maxVelocity, maxVelocity)
-    };
-
-    this.y = clamp(y, 0, parent.height - this.height);
   }
 }

@@ -1,5 +1,6 @@
 import loadImage from '../../util/loadImage';
 import ImageSprite from './ImageSprite';
+import { clamp } from '../../util/clamp';
 
 export default class GameSprite extends ImageSprite {
   static imageUrl;
@@ -22,40 +23,95 @@ export default class GameSprite extends ImageSprite {
     return sprite;
   }
 
-  velocity = { x: 0, y: 0 };
-  acceleration = { x: 0, y: 0 };
-  friction = { x: 0, y: 0 };
+  #direction = 0;
 
-  clampMove() {}
+  #velocity = 0;     // pixels / second
+  #minVelocity = Number.MIN_VALUE;
+  #maxVelocity = Number.MAX_VALUE;
 
-  move(sinceLast) {
-    const { velocity, acceleration, friction, x, y } = this;
+  #acceleration = 0; // pixels / second^2
+  #minAcceleration = Number.MIN_VALUE;
+  #maxAcceleration = Number.MAX_VALUE;
 
-    const xForces = calculateForces(sinceLast, x, velocity.x, acceleration.x, friction.x);
-    const yForces = calculateForces(sinceLast, y, velocity.y, acceleration.y, friction.y);
+  friction = 0;     // pixels / second^2
 
-    this.velocity = { x: xForces.velocity, y: yForces.velocity };
+  get direction() {
+    return this.#direction;
+  }
 
-    this.x = xForces.position;
-    this.y = yForces.position;
+  set direction(value) {
+    this.#direction = Math.atan2(Math.sin(value), Math.cos(value));
+  }
 
-    this.clampMove();
+  get acceleration() {
+    return this.#acceleration;
+  }
+
+  set acceleration(value) {
+    this.#acceleration = clamp(value, this.#minAcceleration, this.#maxAcceleration);
+  }
+
+  get velocity() {
+    return this.#velocity;
+  }
+
+  set velocity(value) {
+    this.#velocity = clamp(value, this.#minVelocity, this.#maxVelocity);
+  }
+
+  get minVelocity() {
+    return this.#minVelocity;
+  }
+
+  set minVelocity(value) {
+    this.#minVelocity = value;
+    this.#velocity = Math.max(value, this.#velocity);
+  }
+
+  get maxVelocity() {
+    return this.#maxVelocity;
+  }
+
+  set maxVelocity(value) {
+    this.#maxVelocity = value;
+    this.#velocity = Math.min(value, this.#velocity);
+  }
+
+  get minAcceleration() {
+    return this.#minAcceleration;
+  }
+
+  set minAcceleration(value) {
+    this.#minAcceleration = value;
+    this.#acceleration = Math.max(value, this.#acceleration);
+  }
+
+  get maxAcceleration() {
+    return this.#maxAcceleration;
+  }
+
+  set maxAcceleration(value) {
+    this.#maxAcceleration = value;
+    this.#acceleration = Math.min(value, this.#acceleration);
+  }
+
+  move(sinceLast, now) {
+    const { velocity, friction, acceleration, direction } = this;
+    const seconds = (sinceLast || 0) / 1000;
+
+    let newVelocity = velocity;
+
+    if (acceleration !== 0) {
+      newVelocity += acceleration * seconds;
+    }
+
+    if (friction !== 0 && velocity !== 0) {
+      newVelocity = (newVelocity / Math.abs(newVelocity))
+        * Math.max(0, Math.abs(newVelocity) - (Math.abs(friction) * seconds));
+    }
+
+    this.x += newVelocity * Math.cos(direction) * seconds;
+    this.y += newVelocity * -Math.sin(direction) * seconds;
+    this.velocity = newVelocity;
   }
 }
-
-const calculateForces = (sinceLast, position, velocity, acceleration, friction) => {
-  let newVelocity = velocity;
-  let newPosition = position;
-
-  if (acceleration !== 0) {
-    newVelocity += acceleration * ((sinceLast || 0) / 1000);
-  }
-
-  if (friction !== 0 && velocity !== 0) {
-    newVelocity = (newVelocity / Math.abs(newVelocity)) * Math.max(0, Math.abs(newVelocity) - (Math.abs(friction) * (sinceLast || 0) / 1000));
-  }
-
-  newPosition += newVelocity * (sinceLast || 0) / 1000;
-
-  return { position: newPosition, velocity: newVelocity };
-};

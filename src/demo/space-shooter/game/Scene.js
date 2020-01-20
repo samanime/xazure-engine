@@ -3,7 +3,6 @@ import Keys from '../../../engine/input/Keys';
 import Player from './Player';
 import PlayerBullet from './PlayerBullet';
 import Enemy from './Enemy';
-import EnemyBullet from './EnemyBullet';
 import TextSprite from '../../../engine/render/sprites/TextSprite';
 import Lives from './Lives';
 import Ray from '../../../engine/Ray';
@@ -37,7 +36,6 @@ export default class GameScene extends Scene {
       Player.load(),
       PlayerBullet.load(),
       Enemy.load(),
-      EnemyBullet.load(),
       Lives.load(),
       Background.load()
     ]);
@@ -85,6 +83,8 @@ export default class GameScene extends Scene {
     if (this.#player.lives <= 0) {
       this.#gameOver();
     }
+    
+    console.log(this.#gameSprites.length);
   }
 
   #reset() {
@@ -103,17 +103,22 @@ export default class GameScene extends Scene {
 
     const axis = inputManager.getGamePadAxis(0).y;
 
+    let direction = this.#player.direction;
     let acceleration = 0;
 
     if (axis) {
+      direction = (axis < 0 ? -1 : 1) * Math.PI / 2;
       acceleration = axis * this.#player.maxAcceleration;
     } else if (inputManager.isKeyDown(Keys.ArrowUp)) {
-      acceleration = -this.#player.maxAcceleration;
+      direction = Math.PI / 2;
+      acceleration = this.#player.maxAcceleration;
     } else if (inputManager.isKeyDown(Keys.ArrowDown)) {
+      direction = -Math.PI / 2;
       acceleration = this.#player.maxAcceleration;
     }
 
-    this.#player.acceleration = { x: 0, y: acceleration };
+    this.#player.direction = direction;
+    this.#player.acceleration = acceleration;
     this.#player.move(sinceLast);
   }
 
@@ -127,7 +132,7 @@ export default class GameScene extends Scene {
 
         bullet.x = this.#player.x + this.#player.width;
         bullet.y = this.#player.y + this.#player.height / 2 - bullet.height / 2;
-        bullet.velocity = { x: this.#player.bulletVelocity, y: 0 };
+        bullet.velocity = this.#player.bulletVelocity;
 
         this.#gameSprites = [ ...this.#gameSprites, bullet ];
         rootSprite.addChild(bullet);
@@ -150,10 +155,8 @@ export default class GameScene extends Scene {
       enemy.y = Math.random() * (rootSprite.height - enemy.height);
       rootSprite.addChild(enemy);
 
-      enemy.velocity = {
-        x: -(Math.random() * (this.#enemyMaxVelocity - this.#enemyMinVelocity) + this.#enemyMinVelocity),
-        y: 0
-      };
+      enemy.velocity = Math.random() * (this.#enemyMaxVelocity - this.#enemyMinVelocity) + this.#enemyMinVelocity;
+      enemy.direction = -Math.PI;
     }
   }
 
@@ -163,7 +166,7 @@ export default class GameScene extends Scene {
     this.#gameSprites.forEach((sprite, index) => {
       sprite.move(sinceLast);
 
-      if (!sprite.hitRect(rootSprite) && !rootSprite.hitRay(new Ray(sprite, sprite.velocity))) {
+      if (!sprite.hitRect(rootSprite) && !rootSprite.hitRay(Ray.fromDirection(sprite, sprite.direction))) {
         this.#destroy(sprite);
       }
     });

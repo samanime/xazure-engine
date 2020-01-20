@@ -124,9 +124,9 @@ export default class GameScene extends Scene {
     if (leftAxis.y) {
       acceleration.y = leftAxis.y * this.#player.maxAcceleration;
     } else if (inputManager.isKeyDown(Keys.W)) {
-      acceleration.y = -this.#player.maxAcceleration;
-    } else if (inputManager.isKeyDown(Keys.S)) {
       acceleration.y = this.#player.maxAcceleration;
+    } else if (inputManager.isKeyDown(Keys.S)) {
+      acceleration.y = -this.#player.maxAcceleration;
     }
 
     if (rightAxis.x || rightAxis.y) {
@@ -138,7 +138,11 @@ export default class GameScene extends Scene {
       ) + Math.PI / 2;
     }
 
-    this.#player.acceleration = acceleration;
+    const direction = (acceleration.y !== 0 || acceleration.x !== 0)
+      ? Math.atan2(acceleration.y, acceleration.x)
+      : this.#player.direction;
+    this.#player.direction = direction;
+    this.#player.acceleration = acceleration.x * Math.cos(direction) + acceleration.y * Math.sin(direction);
 
     this.#player.move(sinceLast);
   }
@@ -153,10 +157,8 @@ export default class GameScene extends Scene {
       bullet.x = this.#player.x + this.#player.width * .5 * Math.sin(bullet.rotation);
       bullet.y = this.#player.y + this.#player.height * .5 * -Math.cos(bullet.rotation);
 
-      bullet.velocity = new Vector(
-        bullet.maxVelocity * Math.sin(bullet.rotation),
-        bullet.maxVelocity * -Math.cos(bullet.rotation)
-      );
+      bullet.direction = -bullet.rotation + Math.PI / 2;
+      bullet.velocity = bullet.maxVelocity;
 
       this.#bullets = [ ...this.#bullets, bullet ];
 
@@ -177,7 +179,7 @@ export default class GameScene extends Scene {
       zombie.x = this.rootSprite.width / 2 + distance * Math.cos(rad);
       zombie.y = this.rootSprite.height / 2 + distance * -Math.sin(rad);
 
-      zombie.totalVelocity = Math.random() * (this.#zombieMaxVelocity - this.#zombieMinVelocity)
+      zombie.velocity = Math.random() * (this.#zombieMaxVelocity - this.#zombieMinVelocity)
         + this.#zombieMinVelocity;
 
       this.#zombies = [ ...this.#zombies, zombie ];
@@ -188,10 +190,7 @@ export default class GameScene extends Scene {
   #zombieMove(sinceLast) {
     this.#zombies.forEach(zombie => {
       zombie.rotation = Math.atan2(zombie.y - this.#player.y, zombie.x - this.#player.x) - Math.PI / 2;
-      zombie.velocity = new Vector(
-        zombie.totalVelocity * Math.sin(zombie.rotation),
-        zombie.totalVelocity * -Math.cos(zombie.rotation)
-      );
+      zombie.direction = -zombie.rotation + Math.PI / 2;
 
       zombie.move(sinceLast);
     });

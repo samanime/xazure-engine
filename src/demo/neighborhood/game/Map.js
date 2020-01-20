@@ -7,12 +7,7 @@ export default class Map extends Sprite {
 
   static async load() {
     await Promise.all([
-      'map',
-      'east-house-clip',
-      'fence-clip',
-      'middle-house-clip',
-      'southeast-cars-clip',
-      'south-houses-clip'
+      'map'
     ].map(async fileName => {
       this.#images[fileName] = await loadImage(`/neighborhood/assets/${fileName}.png`);
     }));

@@ -6,11 +6,22 @@ export default class Rectangle extends Vector {
 
   origin = new Vector();
 
+  get bounds() {
+    const { origin, x, y, width, height } = this;
+
+    return {
+      top: y - origin.y,
+      bottom: y - origin.y + height,
+      left: x - origin.x,
+      right: x - origin.x + width
+    };
+  }
+
   constructor(x = 0, y = 0, width = 100, height = 100, origin = new Vector()) {
     super(x, y);
 
-    this.width = 100;
-    this.height = 100;
+    this.width = width;
+    this.height = height;
 
     this.origin = origin;
   }
@@ -36,12 +47,12 @@ export default class Rectangle extends Vector {
     let tMin = -Infinity;
     let tMax = Infinity;
 
-    const xResult = hitRayAxis(tMin, tMax, this.x, this.x + this.width, ray.origin.x, ray.direction.x);
+    const xResult = hitRayAxis(tMin, tMax, this.x, this.x + this.width, ray.origin.x, ray.point.x);
 
     tMin = xResult.tMin;
     tMax = xResult.tMax;
 
-    const yResult = hitRayAxis(tMin, tMax, this.y, this.y + this.height, ray.origin.y, ray.direction.y);
+    const yResult = hitRayAxis(tMin, tMax, this.y, this.y + this.height, ray.origin.y, ray.point.y);
 
     tMin = yResult.tMin;
     tMax = yResult.tMax;

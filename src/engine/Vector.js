@@ -6,4 +6,9 @@ export default class Vector {
     this.x = x;
     this.y = y;
   }
+
+  scale(value) {
+    this.x *= value;
+    this.y *= value;
+  }
 }

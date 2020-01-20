@@ -10,6 +10,7 @@ const ZOMBIE_INDEX = join(__dirname, '../index-zombie.html');
 const SPACE_INDEX = join(__dirname, '../index-space.html');
 const NEIGHBORHOOD_INDEX = join(__dirname, '../index-neighborhood.html');
 const PUBLIC = join(__dirname, '../dist');
+const ASSETS = join(__dirname, '../assets');
 const ZOMBIE_ASSETS = join(__dirname, '../zombie-assets');
 const SPACE_ASSETS = join(__dirname, '../space-assets');
 const NEIGHBORHOOD_ASSETS = join(__dirname, '../neighborhood-assets');
@@ -21,6 +22,7 @@ app.use('/zombie/assets', express.static(ZOMBIE_ASSETS));
 app.use('/space/assets', express.static(SPACE_ASSETS));
 app.use('/neighborhood/assets', express.static(NEIGHBORHOOD_ASSETS));
 app.use('/public', express.static(PUBLIC));
+app.use('/assets', express.static(ASSETS));
 
 app.get('/zombie', (req, res) => res.sendFile(ZOMBIE_INDEX));
 app.get('/space', (req, res) => res.sendFile(SPACE_INDEX));

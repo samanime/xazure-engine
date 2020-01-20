@@ -10,9 +10,6 @@ export default class Player extends GameSprite {
 
   lives;
 
-  maxVelocity; // pixels / second
-  maxAcceleration; // pixels / second /second
-
   origin = new Vector(Player.image.width / 2, Player.image.height * .636);
 
   constructor() {
@@ -25,11 +22,15 @@ export default class Player extends GameSprite {
     this.fireRate = 5;
 
     this.lives = 5;
-    this.maxVelocity = 800;
-    this.maxAcceleration = 800;
-    this.friction = new Vector(600, 600);
-    this.velocity = new Vector();
-    this.acceleration = new Vector();
+    this.friction = 800;
+
+    this.velocity = 0;
+    this.minVelocity = -300;
+    this.maxVelocity = 300;
+
+    this.acceleration = 0;
+    this.minAcceleration = -1200;
+    this.maxAcceleration = 1200;
   }
 
   fire(now) {
